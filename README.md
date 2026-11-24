@@ -1,4 +1,4 @@
-# CardCraft AI
+# CardCraft AI (AI Content Generator for Product Cards)
 
 A lightweight web application that generates structured product card content (title, description, and keywords) using AI and renders it in a clean, responsive card layout.
 
