@@ -1,18 +1,46 @@
+import { useState } from "react";
+import ProductForm from "./components/ProductForm";
 import ProductCard from "./components/ProductCard";
-
-const MOCK_DATA = {
-	category: "Coffee & Kitchen",
-	title: "AeroPress Go Portable Travel Coffee Press",
-	description:
-		"Engineered for an active lifestyle, the AeroPress Go delivers rich, smooth coffee anywhere your adventures take you. This compact all-in-one system conveniently packs into its own travel mug.",
-	keywords: ["aeropress", "travel coffee", "espresso", "portable brew"],
-};
+import { generateProductDetails } from "./services/aiService";
+import "./App.css";
 
 export default function App() {
+	const [cardData, setCardData] = useState(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState("");
+
+	const handleGenerate = async (productName, category) => {
+		setIsLoading(true);
+		setError("");
+
+		try {
+			const result = await generateProductDetails(productName, category);
+			setCardData({ ...result, category: category.trim() });
+		} catch (err) {
+			setError(err.message || "Something went wrong. Please try again.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	return (
-		<div style={{ maxWidth: "500px", margin: "2rem auto", display: "grid", gap: "1rem" }}>
-			<ProductCard data={null} isLoading={false} />
-			<ProductCard data={MOCK_DATA} isLoading={false} />
-		</div>
+		<main className="app-container">
+			<header className="app-header">
+				<h1>CardCraft AI</h1>
+				<p>Instant, structured product copy powered by AI.</p>
+			</header>
+
+			<section className="workspace">
+				<ProductForm onGenerate={handleGenerate} isLoading={isLoading} />
+
+				{error && (
+					<div className="error-banner" role="alert">
+						{error}
+					</div>
+				)}
+
+				<ProductCard data={cardData} isLoading={isLoading} />
+			</section>
+		</main>
 	);
 }
